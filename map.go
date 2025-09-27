@@ -16,7 +16,7 @@ type Key interface {
 	~string
 }
 
-// Map represents a CHAMP (Compressed Hash-Array Mapped Prefix-tree)
+// Map represents a CHAMP (Compressed Hash-Array Mapped Prefix-tree).
 type Map[K Key, V any] struct {
 	root node[K, V]
 	size int
