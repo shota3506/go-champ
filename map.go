@@ -109,6 +109,22 @@ func hashKey[K Key](key K) uint64 {
 	return maphash.Comparable(seed, key)
 }
 
+// Keys returns an iterator over the keys.
+func (m *Map[K, V]) Keys() iter.Seq[K] {
+	if m.root != nil {
+		return m.root.keysSeq()
+	}
+	return func(func(K) bool) {}
+}
+
+// Values returns an iterator over the values.
+func (m *Map[K, V]) Values() iter.Seq[V] {
+	if m.root != nil {
+		return m.root.valuesSeq()
+	}
+	return func(func(V) bool) {}
+}
+
 // Equal checks if two maps contain the same key-value pairs.
 func Equal[K Key, V comparable](m1, m2 *Map[K, V]) bool {
 	if m1.size != m2.size {

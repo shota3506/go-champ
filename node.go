@@ -3,6 +3,7 @@ package champ
 import (
 	"fmt"
 	"iter"
+	"slices"
 )
 
 type node[K Key, V any] interface {
@@ -12,6 +13,8 @@ type node[K Key, V any] interface {
 	set(key K, value V, hash uint64, shift uint, hashFunc func(key K) uint64) (node[K, V], bool)
 	del(key K, hash uint64, shift uint) (node[K, V], bool)
 	all() iter.Seq2[K, V]
+	keysSeq() iter.Seq[K]
+	valuesSeq() iter.Seq[V]
 }
 
 // bitmapIndexedNode is the main CHAMP node type with compressed storage
@@ -190,8 +193,46 @@ func (n *bitmapIndexedNode[K, V]) all() iter.Seq2[K, V] {
 				return
 			}
 		}
-		for i := 0; i < len(n.nodes); i++ {
-			n.nodes[i].all()(yield)
+		for _, child := range n.nodes {
+			for k, v := range child.all() {
+				if !yield(k, v) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func (n *bitmapIndexedNode[K, V]) keysSeq() iter.Seq[K] {
+	return func(yield func(K) bool) {
+		for _, k := range n.keys {
+			if !yield(k) {
+				return
+			}
+		}
+		for _, child := range n.nodes {
+			for k := range child.keysSeq() {
+				if !yield(k) {
+					return
+				}
+			}
+		}
+	}
+}
+
+func (n *bitmapIndexedNode[K, V]) valuesSeq() iter.Seq[V] {
+	return func(yield func(V) bool) {
+		for _, v := range n.values {
+			if !yield(v) {
+				return
+			}
+		}
+		for _, child := range n.nodes {
+			for v := range child.valuesSeq() {
+				if !yield(v) {
+					return
+				}
+			}
 		}
 	}
 }
@@ -316,6 +357,14 @@ func (n *collisionNode[K, V]) all() iter.Seq2[K, V] {
 			}
 		}
 	}
+}
+
+func (n *collisionNode[K, V]) keysSeq() iter.Seq[K] {
+	return slices.Values(n.keys)
+}
+
+func (n *collisionNode[K, V]) valuesSeq() iter.Seq[V] {
+	return slices.Values(n.values)
 }
 
 func (n *collisionNode[K, V]) String() string {

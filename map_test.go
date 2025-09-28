@@ -2,6 +2,8 @@ package champ
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"testing"
 )
 
@@ -231,6 +233,101 @@ func TestMapAll(t *testing.T) {
 			}
 			if len(tt.expected) != 0 {
 				t.Error("All() did not return all expected key-value pairs")
+			}
+		})
+	}
+}
+
+func TestMapKeys(t *testing.T) {
+	for _, tt := range []struct {
+		name     string
+		expected map[string]int
+	}{
+		{
+			name:     "empty map",
+			expected: map[string]int{},
+		},
+		{
+			name: "small map",
+			expected: map[string]int{
+				"key1": 1,
+				"key2": 2,
+				"key3": 3,
+			},
+		},
+		{
+			name: "large map",
+			expected: func() map[string]int {
+				const n = 2048
+				m := make(map[string]int, n)
+				for i := range n {
+					m[fmt.Sprintf("key%d", i)] = i
+				}
+				return m
+			}(),
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			m := New[string, int]()
+			for k, v := range tt.expected {
+				m = m.Set(k, v)
+			}
+
+			for k := range m.Keys() {
+				if _, ok := tt.expected[k]; !ok {
+					t.Errorf("Keys() returned unexpected key %s", k)
+				}
+				delete(tt.expected, k)
+			}
+			if len(tt.expected) != 0 {
+				t.Error("Keys() did not return all expected keys")
+			}
+		})
+	}
+}
+
+func TestMapValues(t *testing.T) {
+	for _, tt := range []struct {
+		name     string
+		expected map[string]int
+	}{
+		{
+			name:     "empty map",
+			expected: map[string]int{},
+		},
+		{
+			name: "small map",
+			expected: map[string]int{
+				"key1": 1,
+				"key2": 2,
+				"key3": 3,
+			},
+		},
+		{
+			name: "large map",
+			expected: func() map[string]int {
+				const n = 2048
+				m := make(map[string]int, n)
+				for i := range n {
+					m[fmt.Sprintf("key%d", i)] = i
+				}
+				return m
+			}(),
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			m := New[string, int]()
+			for k, v := range tt.expected {
+				m = m.Set(k, v)
+			}
+
+			expected := slices.Collect(maps.Values(tt.expected))
+			slices.Sort(expected)
+			actual := slices.Collect(m.Values())
+			slices.Sort(actual)
+
+			if !slices.Equal(expected, actual) {
+				t.Errorf("Values() = %v, expected %v", actual, expected)
 			}
 		})
 	}
