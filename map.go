@@ -15,7 +15,7 @@ const (
 	bitsPerLevel = 5
 	branchFactor = 1 << bitsPerLevel
 	bitMask      = branchFactor - 1
-	maxDepth     = 7 // 32 bits / 5 bits per level = 6.4
+	maxDepth     = 13 // 64 bits / 5 bits per level = 12.8
 )
 
 type Key comparable
@@ -105,8 +105,8 @@ func (m *Map[K, V]) All() iter.Seq2[K, V] {
 	return func(func(K, V) bool) {}
 }
 
-func hashKey[K Key](key K) uint32 {
-	return uint32(maphash.Comparable(seed, key))
+func hashKey[K Key](key K) uint64 {
+	return maphash.Comparable(seed, key)
 }
 
 // Equal checks if two maps contain the same key-value pairs.

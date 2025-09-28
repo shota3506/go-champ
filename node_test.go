@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-// Simple hash function for testing, which converts binary string to uint32.
-func testHashFunc(key string) uint32 {
-	i, err := strconv.ParseInt(key, 2, 32)
+// Simple hash function for testing, which converts binary string to uint64.
+func testHashFunc(key string) uint64 {
+	i, err := strconv.ParseUint(key, 2, 64)
 	if err != nil {
 		panic(err)
 	}
-	return uint32(i)
+	return i
 }
 
 func TestBitmapIndexedNode(t *testing.T) {
@@ -21,7 +21,7 @@ func TestBitmapIndexedNode(t *testing.T) {
 			name       string
 			node       *bitmapIndexedNode[string, int]
 			key        string
-			hash       uint32
+			hash       uint64
 			shift      uint
 			expected   int
 			expectedOk bool
@@ -111,7 +111,7 @@ func TestBitmapIndexedNode(t *testing.T) {
 			node          *bitmapIndexedNode[string, int]
 			key           string
 			value         int
-			hash          uint32
+			hash          uint64
 			shift         uint
 			expectedAdded bool
 			expected      node[string, int]
@@ -175,13 +175,13 @@ func TestBitmapIndexedNode(t *testing.T) {
 				name: "collision creates child collision node",
 				node: &bitmapIndexedNode[string, int]{
 					datamap: 0b00010,
-					keys:    []string{"00001" + strings.Repeat("00000", 5)},
+					keys:    []string{"00001" + strings.Repeat("00000", 11)},
 					values:  []int{100},
 				},
-				key:           "0000000001" + strings.Repeat("00000", 5),
+				key:           "0000000001" + strings.Repeat("00000", 11),
 				value:         200,
-				hash:          0b0000000001 << (5 * 5),
-				shift:         5 * 5,
+				hash:          0b0000000001 << (5 * 11),
+				shift:         5 * 11,
 				expectedAdded: true,
 				expected: &bitmapIndexedNode[string, int]{
 					nodemap: 0b00010,
@@ -191,8 +191,8 @@ func TestBitmapIndexedNode(t *testing.T) {
 							nodes: []node[string, int]{
 								&collisionNode[string, int]{
 									keys: []string{
-										"0000000001" + strings.Repeat("00000", 5),
-										"00001" + strings.Repeat("00000", 5),
+										"0000000001" + strings.Repeat("00000", 11),
+										"00001" + strings.Repeat("00000", 11),
 									},
 									values: []int{200, 100},
 								},
@@ -219,7 +219,7 @@ func TestBitmapIndexedNode(t *testing.T) {
 			name            string
 			node            *bitmapIndexedNode[string, int]
 			key             string
-			hash            uint32
+			hash            uint64
 			shift           uint
 			expectedDeleted bool
 			expected        node[string, int]
@@ -293,13 +293,13 @@ func TestBitmapIndexedNode(t *testing.T) {
 						&bitmapIndexedNode[string, int]{
 							nodemap: 0b00001,
 							datamap: 0b00010,
-							keys:    []string{"0000100001" + strings.Repeat("00000", 5)},
+							keys:    []string{"0000100001" + strings.Repeat("00000", 11)},
 							values:  []int{100},
 							nodes: []node[string, int]{
 								&collisionNode[string, int]{
 									keys: []string{
-										"0000000001" + strings.Repeat("00000", 5),
-										"00001" + strings.Repeat("00000", 5),
+										"0000000001" + strings.Repeat("00000", 11),
+										"00001" + strings.Repeat("00000", 11),
 									},
 									values: []int{200, 100},
 								},
@@ -307,9 +307,9 @@ func TestBitmapIndexedNode(t *testing.T) {
 						},
 					},
 				},
-				key:             "00001" + strings.Repeat("00000", 5),
-				hash:            0b00001 << (5 * 5),
-				shift:           5 * 5,
+				key:             "00001" + strings.Repeat("00000", 11),
+				hash:            0b00001 << (5 * 11),
+				shift:           5 * 11,
 				expectedDeleted: true,
 				expected: &bitmapIndexedNode[string, int]{
 					nodemap: 0b00010,
@@ -317,8 +317,8 @@ func TestBitmapIndexedNode(t *testing.T) {
 						&bitmapIndexedNode[string, int]{
 							datamap: 0b00011,
 							keys: []string{
-								"0000000001" + strings.Repeat("00000", 5),
-								"0000100001" + strings.Repeat("00000", 5),
+								"0000000001" + strings.Repeat("00000", 11),
+								"0000100001" + strings.Repeat("00000", 11),
 							},
 							values: []int{200, 100},
 						},

@@ -8,9 +8,9 @@ import (
 type node[K Key, V any] interface {
 	fmt.Stringer
 
-	get(key K, hash uint32, shift uint) (V, bool)
-	set(key K, value V, hash uint32, shift uint, hashFunc func(key K) uint32) (node[K, V], bool)
-	del(key K, hash uint32, shift uint) (node[K, V], bool)
+	get(key K, hash uint64, shift uint) (V, bool)
+	set(key K, value V, hash uint64, shift uint, hashFunc func(key K) uint64) (node[K, V], bool)
+	del(key K, hash uint64, shift uint) (node[K, V], bool)
 	all() iter.Seq2[K, V]
 }
 
@@ -23,7 +23,7 @@ type bitmapIndexedNode[K Key, V any] struct {
 	values  []V          // Array of values (compressed)
 }
 
-func (n *bitmapIndexedNode[K, V]) get(key K, hash uint32, shift uint) (V, bool) {
+func (n *bitmapIndexedNode[K, V]) get(key K, hash uint64, shift uint) (V, bool) {
 	var zero V
 	bit := uint32(1 << ((hash >> shift) & bitMask))
 
@@ -43,7 +43,7 @@ func (n *bitmapIndexedNode[K, V]) get(key K, hash uint32, shift uint) (V, bool) 
 	return zero, false
 }
 
-func (n *bitmapIndexedNode[K, V]) set(key K, value V, hash uint32, shift uint, hashFunc func(key K) uint32) (node[K, V], bool) {
+func (n *bitmapIndexedNode[K, V]) set(key K, value V, hash uint64, shift uint, hashFunc func(key K) uint64) (node[K, V], bool) {
 	bit := uint32(1 << ((hash >> shift) & bitMask))
 
 	if n.datamap&bit != 0 {
@@ -111,7 +111,7 @@ func (n *bitmapIndexedNode[K, V]) set(key K, value V, hash uint32, shift uint, h
 	}, true
 }
 
-func (n *bitmapIndexedNode[K, V]) del(key K, hash uint32, shift uint) (node[K, V], bool) {
+func (n *bitmapIndexedNode[K, V]) del(key K, hash uint64, shift uint) (node[K, V], bool) {
 	bit := uint32(1 << ((hash >> shift) & bitMask))
 
 	if n.datamap&bit != 0 {
@@ -201,8 +201,8 @@ func (n *bitmapIndexedNode[K, V]) String() string {
 }
 
 func (n *bitmapIndexedNode[K, V]) createSubNode(
-	key1 K, val1 V, hash1 uint32,
-	key2 K, val2 V, hash2 uint32,
+	key1 K, val1 V, hash1 uint64,
+	key2 K, val2 V, hash2 uint64,
 	shift uint,
 ) node[K, V] {
 	if shift >= maxDepth*bitsPerLevel {
@@ -245,7 +245,7 @@ type collisionNode[K Key, V any] struct {
 	values []V
 }
 
-func (n *collisionNode[K, V]) get(key K, hash uint32, shift uint) (V, bool) {
+func (n *collisionNode[K, V]) get(key K, hash uint64, shift uint) (V, bool) {
 	for i, k := range n.keys {
 		if k == key {
 			return n.values[i], true
@@ -255,7 +255,7 @@ func (n *collisionNode[K, V]) get(key K, hash uint32, shift uint) (V, bool) {
 	return zero, false
 }
 
-func (n *collisionNode[K, V]) set(key K, value V, hash uint32, shift uint, _ func(key K) uint32) (node[K, V], bool) {
+func (n *collisionNode[K, V]) set(key K, value V, hash uint64, shift uint, _ func(key K) uint64) (node[K, V], bool) {
 	for i, k := range n.keys {
 		if k == key {
 			// Update existing
@@ -284,7 +284,7 @@ func (n *collisionNode[K, V]) set(key K, value V, hash uint32, shift uint, _ fun
 	}, true
 }
 
-func (n *collisionNode[K, V]) del(key K, hash uint32, shift uint) (node[K, V], bool) {
+func (n *collisionNode[K, V]) del(key K, hash uint64, shift uint) (node[K, V], bool) {
 	for i, k := range n.keys {
 		if k == key {
 			if len(n.keys) == 2 {

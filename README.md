@@ -80,32 +80,32 @@ goos: darwin
 goarch: arm64
 pkg: github.com/shota3506/go-champ
 cpu: Apple M3
-BenchmarkMapGet/size_10-8               59344192                19.95 ns/op            0 B/op          0 allocs/op
-BenchmarkMapGet/size_100-8              61596108                20.32 ns/op            0 B/op          0 allocs/op
-BenchmarkMapGet/size_1000-8             40288735                30.02 ns/op            0 B/op          0 allocs/op
-BenchmarkMapGet/size_10000-8            29187522                41.41 ns/op            0 B/op          0 allocs/op
-BenchmarkMapGet/size_100000-8           20657718                59.40 ns/op            0 B/op          0 allocs/op
-BenchmarkMapGet/size_1000000-8           4170073               278.3 ns/op             0 B/op          0 allocs/op
-BenchmarkMapSet/update/size_10-8        10101579               120.5 ns/op           283 B/op          6 allocs/op
-BenchmarkMapSet/update/size_100-8        6738126               177.8 ns/op           695 B/op          6 allocs/op
-BenchmarkMapSet/update/size_1000-8               4709404               255.2 ns/op          1008 B/op          8 allocs/op
-BenchmarkMapSet/update/size_10000-8              2676663               451.9 ns/op          1491 B/op          9 allocs/op
-BenchmarkMapSet/update/size_100000-8             1543225               808.5 ns/op          1883 B/op         11 allocs/op
-BenchmarkMapSet/update/size_1000000-8            1000000              1582 ns/op            2187 B/op         12 allocs/op
-BenchmarkMapSet/insert/size_10-8                 1306065               981.2 ns/op          2176 B/op         12 allocs/op
-BenchmarkMapSet/insert/size_100-8                1330926               976.0 ns/op          2179 B/op         12 allocs/op
-BenchmarkMapSet/insert/size_1000-8               1300101               981.4 ns/op          2176 B/op         12 allocs/op
-BenchmarkMapSet/insert/size_10000-8              1304326               976.2 ns/op          2183 B/op         12 allocs/op
-BenchmarkMapSet/insert/size_100000-8             1216014              1013 ns/op            2215 B/op         12 allocs/op
-BenchmarkMapSet/insert/size_1000000-8             936553              1312 ns/op            2338 B/op         13 allocs/op
-BenchmarkMapDelete/size_10-8                     7906136               148.5 ns/op           287 B/op          7 allocs/op
-BenchmarkMapDelete/size_100-8                    6600783               181.2 ns/op           673 B/op          6 allocs/op
-BenchmarkMapDelete/size_1000-8                   4256062               282.7 ns/op          1073 B/op          7 allocs/op
-BenchmarkMapDelete/size_10000-8                  2536194               473.8 ns/op          1491 B/op          8 allocs/op
-BenchmarkMapDelete/size_100000-8                 1563249               767.0 ns/op          1865 B/op         10 allocs/op
-BenchmarkMapDelete/size_1000000-8                 841875              1437 ns/op            2253 B/op         12 allocs/op
+BenchmarkMapGet/size_10-8               58748752                20.37 ns/op            0 B/op          0 allocs/op
+lBenchmarkMapGet/size_100-8             47989282                24.85 ns/op            0 B/op          0 allocs/op
+BenchmarkMapGet/size_1000-8             39153734                30.76 ns/op            0 B/op            0 allocs/op
+BenchmarkMapGet/size_10000-8            29500065                40.40 ns/op            0 B/op            0 allocs/op
+BenchmarkMapGet/size_100000-8           23263834                51.22 ns/op            0 B/op            0 allocs/op
+BenchmarkMapGet/size_1000000-8           4214810               273.6 ns/op             0 B/op            0 allocs/op
+BenchmarkMapSet/update/size_10-8        11112537               107.3 ns/op           302 B/op            5 allocs/op
+BenchmarkMapSet/update/size_100-8        6494270               184.0 ns/op           695 B/op            7 allocs/op
+BenchmarkMapSet/update/size_1000-8               4796413               251.8 ns/op     999 B/op          8 allocs/op
+BenchmarkMapSet/update/size_10000-8              2642210               452.0 ns/op    1492 B/op          9 allocs/op
+BenchmarkMapSet/update/size_100000-8             1558410               919.8 ns/op    1886 B/op         11 allocs/op
+BenchmarkMapSet/update/size_1000000-8            1000000              1563 ns/op     2186 B/op          12 allocs/op
+BenchmarkMapSet/insert/size_10-8                 1000000              1028 ns/op     2135 B/op          12 allocs/op
+BenchmarkMapSet/insert/size_100-8                1000000              1059 ns/op     2135 B/op          12 allocs/op
+BenchmarkMapSet/insert/size_1000-8               1000000              1065 ns/op     2137 B/op          12 allocs/op
+BenchmarkMapSet/insert/size_10000-8              1000000              1094 ns/op     2145 B/op          12 allocs/op
+BenchmarkMapSet/insert/size_100000-8             1000000              1081 ns/op     2192 B/op          12 allocs/op
+BenchmarkMapSet/insert/size_1000000-8             835600              1472 ns/op     2332 B/op          13 allocs/op
+BenchmarkMapDelete/size_10-8                    10169792               112.5 ns/op     310 B/op          4 allocs/op
+BenchmarkMapDelete/size_100-8                    6187014               193.4 ns/op     680 B/op          6 allocs/op
+BenchmarkMapDelete/size_1000-8                   4267792               280.7 ns/op    1058 B/op          8 allocs/op
+BenchmarkMapDelete/size_10000-8                  2590080               465.0 ns/op    1492 B/op          8 allocs/op
+BenchmarkMapDelete/size_100000-8                 1574355               762.6 ns/op    1869 B/op         10 allocs/op
+BenchmarkMapDelete/size_1000000-8                1000000              1453 ns/op     2251 B/op          12 allocs/op
 PASS
-ok      github.com/shota3506/go-champ   49.664s
+ok      github.com/shota3506/go-champ   44.873s
 ```
 
 </details>
