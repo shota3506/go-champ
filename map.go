@@ -18,16 +18,14 @@ const (
 	maxDepth     = 13 // 64 bits / 5 bits per level = 12.8
 )
 
-type Key comparable
-
 // Map represents a CHAMP (Compressed Hash-Array Mapped Prefix-tree).
-type Map[K Key, V any] struct {
+type Map[K comparable, V any] struct {
 	root node[K, V]
 	size int
 }
 
 // New creates a new empty CHAMP map.
-func New[K Key, V any]() *Map[K, V] {
+func New[K comparable, V any]() *Map[K, V] {
 	return &Map[K, V]{
 		root: nil,
 		size: 0,
@@ -105,7 +103,7 @@ func (m *Map[K, V]) All() iter.Seq2[K, V] {
 	return func(func(K, V) bool) {}
 }
 
-func hashKey[K Key](key K) uint64 {
+func hashKey[K comparable](key K) uint64 {
 	return maphash.Comparable(seed, key)
 }
 
@@ -126,14 +124,14 @@ func (m *Map[K, V]) Values() iter.Seq[V] {
 }
 
 // Equal checks if two maps contain the same key-value pairs.
-func Equal[K Key, V comparable](m1, m2 *Map[K, V]) bool {
+func Equal[K, V comparable](m1, m2 *Map[K, V]) bool {
 	if m1.size != m2.size {
 		return false
 	}
 	return equalNode(m1.root, m2.root)
 }
 
-func equalNode[K Key, V comparable](n1, n2 node[K, V]) bool {
+func equalNode[K, V comparable](n1, n2 node[K, V]) bool {
 	// short-circuit for identical pointers
 	if n1 == n2 {
 		return true
@@ -157,7 +155,7 @@ func equalNode[K Key, V comparable](n1, n2 node[K, V]) bool {
 	return false
 }
 
-func equalBitmapIndexedNodes[K Key, V comparable](n1, n2 *bitmapIndexedNode[K, V]) bool {
+func equalBitmapIndexedNodes[K, V comparable](n1, n2 *bitmapIndexedNode[K, V]) bool {
 	if n1.datamap != n2.datamap || n1.nodemap != n2.nodemap {
 		return false
 	}
@@ -174,7 +172,7 @@ func equalBitmapIndexedNodes[K Key, V comparable](n1, n2 *bitmapIndexedNode[K, V
 	return true
 }
 
-func equalCollisionNodes[K Key, V comparable](n1, n2 *collisionNode[K, V]) bool {
+func equalCollisionNodes[K, V comparable](n1, n2 *collisionNode[K, V]) bool {
 	if len(n1.keys) != len(n2.keys) {
 		return false
 	}

@@ -6,7 +6,7 @@ import (
 	"slices"
 )
 
-type node[K Key, V any] interface {
+type node[K comparable, V any] interface {
 	fmt.Stringer
 
 	get(key K, hash uint64, shift uint) (V, bool)
@@ -18,7 +18,7 @@ type node[K Key, V any] interface {
 }
 
 // bitmapIndexedNode is the main CHAMP node type with compressed storage
-type bitmapIndexedNode[K Key, V any] struct {
+type bitmapIndexedNode[K comparable, V any] struct {
 	nodemap uint32       // Bitmap for child nodes
 	datamap uint32       // Bitmap for key-value pairs
 	nodes   []node[K, V] // Array of child nodes (compressed)
@@ -281,7 +281,7 @@ func (n *bitmapIndexedNode[K, V]) createSubNode(
 }
 
 // collisionNode handles hash collisions
-type collisionNode[K Key, V any] struct {
+type collisionNode[K comparable, V any] struct {
 	keys   []K
 	values []V
 }

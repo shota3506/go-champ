@@ -10,7 +10,7 @@ func indent(depth int) string {
 }
 
 // nodeString returns an indented string representation of the node.
-func nodeString[K Key, V any](n node[K, V], depth int, shift uint) string {
+func nodeString[K comparable, V any](n node[K, V], depth int, shift uint) string {
 	if n == nil {
 		return fmt.Sprintf("%s<nil>", indent(depth))
 	}
@@ -25,7 +25,7 @@ func nodeString[K Key, V any](n node[K, V], depth int, shift uint) string {
 	}
 }
 
-func bitmapIndexedNodeString[K Key, V any](n *bitmapIndexedNode[K, V], depth int, shift uint) string {
+func bitmapIndexedNodeString[K comparable, V any](n *bitmapIndexedNode[K, V], depth int, shift uint) string {
 	itob := func(datamap uint32, index int) int {
 		count := -1
 		for bit := range 32 {
@@ -66,7 +66,7 @@ func bitmapIndexedNodeString[K Key, V any](n *bitmapIndexedNode[K, V], depth int
 	return sb.String()
 }
 
-func collisionNodeString[K Key, V any](n *collisionNode[K, V], depth int) string {
+func collisionNodeString[K comparable, V any](n *collisionNode[K, V], depth int) string {
 	var sb strings.Builder
 
 	sb.WriteString(fmt.Sprintf("%sCollisionNode{\n", indent(depth)))
