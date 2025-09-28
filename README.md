@@ -62,9 +62,13 @@ func main() {
 ## Performance
 
 Map.Get: O(log₃₂ n)
+
 Map.Set: O(log₃₂ n)
+
 Map.Delete: O(log₃₂ n)
+
 Map.Len: O(1)
+
 Map.All: O(n) to iterate over all key-value pairs
 
 <details>
