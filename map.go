@@ -1,8 +1,14 @@
 package champ
 
 import (
-	"hash/fnv"
+	"hash/maphash"
 	"iter"
+)
+
+var (
+	// global seed for hashing keys.
+	// It should be unique per program execution for map equlity checks.
+	seed = maphash.MakeSeed()
 )
 
 const (
@@ -12,9 +18,7 @@ const (
 	maxDepth     = 7 // 32 bits / 5 bits per level = 6.4
 )
 
-type Key interface {
-	~string
-}
+type Key comparable
 
 // Map represents a CHAMP (Compressed Hash-Array Mapped Prefix-tree).
 type Map[K Key, V any] struct {
@@ -102,9 +106,7 @@ func (m *Map[K, V]) All() iter.Seq2[K, V] {
 }
 
 func hashKey[K Key](key K) uint32 {
-	h := fnv.New32a()
-	h.Write([]byte(key))
-	return h.Sum32()
+	return uint32(maphash.Comparable(seed, key))
 }
 
 // Equal checks if two maps contain the same key-value pairs.
@@ -161,7 +163,14 @@ func equalCollisionNodes[K Key, V comparable](n1, n2 *collisionNode[K, V]) bool 
 		return false
 	}
 	for i := range n1.keys {
-		if n1.keys[i] != n2.keys[i] || n1.values[i] != n2.values[i] {
+		ok := false
+		for j := range n2.keys {
+			if n1.keys[i] == n2.keys[j] && n1.values[i] == n2.values[j] {
+				ok = true
+				break
+			}
+		}
+		if !ok {
 			return false
 		}
 	}

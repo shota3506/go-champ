@@ -3,7 +3,6 @@ package champ
 import (
 	"fmt"
 	"iter"
-	"slices"
 )
 
 type node[K Key, V any] interface {
@@ -208,15 +207,9 @@ func (n *bitmapIndexedNode[K, V]) createSubNode(
 ) node[K, V] {
 	if shift >= maxDepth*bitsPerLevel {
 		// Create collision node
-		if key1 < key2 {
-			return &collisionNode[K, V]{
-				keys:   []K{key1, key2},
-				values: []V{val1, val2},
-			}
-		}
 		return &collisionNode[K, V]{
-			keys:   []K{key2, key1},
-			values: []V{val2, val1},
+			keys:   []K{key1, key2},
+			values: []V{val1, val2},
 		}
 	}
 
@@ -253,54 +246,64 @@ type collisionNode[K Key, V any] struct {
 }
 
 func (n *collisionNode[K, V]) get(key K, hash uint32, shift uint) (V, bool) {
-	idx, ok := slices.BinarySearch(n.keys, key)
-	if ok {
-		return n.values[idx], true
+	for i, k := range n.keys {
+		if k == key {
+			return n.values[i], true
+		}
 	}
 	var zero V
 	return zero, false
 }
 
 func (n *collisionNode[K, V]) set(key K, value V, hash uint32, shift uint, _ func(key K) uint32) (node[K, V], bool) {
-	idx, ok := slices.BinarySearch(n.keys, key)
-	if ok {
-		// Update existing
-		newValues := make([]V, len(n.values))
-		copy(newValues, n.values)
-		newValues[idx] = value
+	for i, k := range n.keys {
+		if k == key {
+			// Update existing
+			newValues := make([]V, len(n.values))
+			copy(newValues, n.values)
+			newValues[i] = value
 
-		return &collisionNode[K, V]{
-			keys:   n.keys,
-			values: newValues,
-		}, false
+			return &collisionNode[K, V]{
+				keys:   n.keys,
+				values: newValues,
+			}, false
+		}
 	}
 
-	// Add new entry
+	// Add new entry at the end
+	newKeys := make([]K, len(n.keys)+1)
+	newValues := make([]V, len(n.values)+1)
+	copy(newKeys, n.keys)
+	copy(newValues, n.values)
+	newKeys[len(n.keys)] = key
+	newValues[len(n.values)] = value
+
 	return &collisionNode[K, V]{
-		keys:   insertAt(n.keys, idx, key),
-		values: insertAt(n.values, idx, value),
+		keys:   newKeys,
+		values: newValues,
 	}, true
 }
 
 func (n *collisionNode[K, V]) del(key K, hash uint32, shift uint) (node[K, V], bool) {
-	idx, ok := slices.BinarySearch(n.keys, key)
-	if ok {
-		if len(n.keys) == 2 {
-			// Convert to bitmapIndexedNode when only one entry remains.
-			// The parent bitmapIndexedNode will detect this single-entry node
-			// and collapse it into its own data array.
-			// We use an arbitrary bit position (0) since this node will be collapsed anyway.
-			return &bitmapIndexedNode[K, V]{
-				datamap: 1, // Set first bit to indicate one data entry
-				keys:    []K{n.keys[1-idx]},
-				values:  []V{n.values[1-idx]},
+	for i, k := range n.keys {
+		if k == key {
+			if len(n.keys) == 2 {
+				// Convert to bitmapIndexedNode when only one entry remains.
+				// The parent bitmapIndexedNode will detect this single-entry node
+				// and collapse it into its own data array.
+				// We use an arbitrary bit position (0) since this node will be collapsed anyway.
+				return &bitmapIndexedNode[K, V]{
+					datamap: 1, // Set first bit to indicate one data entry
+					keys:    []K{n.keys[1-i]},
+					values:  []V{n.values[1-i]},
+				}, true
+			}
+
+			return &collisionNode[K, V]{
+				keys:   removeAt(n.keys, i),
+				values: removeAt(n.values, i),
 			}, true
 		}
-
-		return &collisionNode[K, V]{
-			keys:   removeAt(n.keys, idx),
-			values: removeAt(n.values, idx),
-		}, true
 	}
 	return n, false
 }
