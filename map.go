@@ -107,6 +107,7 @@ func hashKey[K Key](key K) uint32 {
 	return h.Sum32()
 }
 
+// Equal checks if two maps contain the same key-value pairs.
 func Equal[K Key, V comparable](m1, m2 *Map[K, V]) bool {
 	if m1.size != m2.size {
 		return false

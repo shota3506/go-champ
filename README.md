@@ -1,5 +1,8 @@
 # go-champ
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/shota3506/go-champ.svg)](https://pkg.go.dev/github.com/shota3506/go-champ)
+[![Go Report Card](https://goreportcard.com/badge/github.com/shota3506/go-champ)](https://goreportcard.com/report/github.com/shota3506/go-champ)
+
 A Go implementation of CHAMP (Compressed Hash-Array Mapped Prefix-tree), an efficient immutable map data structure.
 
 ## Overview
@@ -25,34 +28,34 @@ go get github.com/shota3506/go-champ
 package main
 
 import (
-    "fmt"
+	"fmt"
 
-    "github.com/shota3506/go-champ"
+	"github.com/shota3506/go-champ"
 )
 
 func main() {
-    m := champ.New[string, int]()
+	m := champ.New[string, int]()
 
-    // Set values (immutable, returns a new map)
-    m = m.Set("key1", 100)
-    m = m.Set("key2", 200)
-    m = m.Set("key3", 300)
+	// Set values (immutable, returns a new map)
+	m = m.Set("key1", 100)
+	m = m.Set("key2", 200)
+	m = m.Set("key3", 300)
 
-    // Get value
-    if value, ok := m.Get("key1"); ok {
-        fmt.Printf("key1: %d\n", value) // Output: key1: 100
-    }
+	// Get value
+	if value, ok := m.Get("key1"); ok {
+		fmt.Printf("key1: %d\n", value) // Output: key1: 100
+	}
 
-    // Delete a key (immutable, returns a new map)
-    m = m.Delete("key2")
+	// Delete a key (immutable, returns a new map)
+	m = m.Delete("key2")
 
-    // Check map size
-    fmt.Printf("Size: %d\n", m.Len()) // Output: Size: 2
+	// Check map size
+	fmt.Printf("Size: %d\n", m.Len()) // Output: Size: 2
 
-    // Iterate over all key-value pairs
-    for key, value := range m.All() {
-        fmt.Printf("%s: %d\n", key, value)
-    }
+	// Iterate over all key-value pairs
+	for key, value := range m.All() {
+		fmt.Printf("%s: %d\n", key, value)
+	}
 }
 ```
 
